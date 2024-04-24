@@ -80,21 +80,20 @@ func openSeaSocket(c *gin.Context) {
 	defer openSeaConn.Close()
 
 	subscribe := model.StreamHeartBeat{
-		Topic:   "collection:BlockGames Dice",
+		Topic:   "collection:persona",
 		Event:   "phx_join",
 		Payload: struct{}{},
 		Ref:     0,
 	}
 
-	log.Println("here****---8")
 	openSeaConn.WriteJSON(subscribe)
 	go handleHeartBeat(openSeaConn)
+	go updateSubscription(conn, openSeaConn, &subscribe)
 
-	log.Println("here****---9")
 	for {
 		mt, message, err := openSeaConn.ReadMessage()
 		if err != nil {
-			log.Println("read: ", err)
+			log.Println("(OpenSea)read: ", err)
 			break
 		}
 		conn.WriteMessage(mt, message)
@@ -102,7 +101,6 @@ func openSeaSocket(c *gin.Context) {
 }
 
 func handleHeartBeat(conn *websocket.Conn) {
-	log.Println("Made it -----")
 	heartBeat := model.StreamHeartBeat{
 		Topic:   "phoenix",
 		Event:   "heartbeat",
@@ -110,14 +108,21 @@ func handleHeartBeat(conn *websocket.Conn) {
 		Ref:     0,
 	}
 
-	// ticker := time.NewTicker(time.Duration(30) * time.Second)
-	//defer ticker.Stop()
-
 	for {
 		conn.WriteJSON(heartBeat)
-
-		//ticker.Reset(30 * time.Second)
 		time.Sleep(time.Millisecond * 30000)
 		log.Println("heartbeat sent!")
+	}
+}
+
+func updateSubscription(clientConn *websocket.Conn, openSeaConn *websocket.Conn, subscribe *model.StreamHeartBeat) {
+	for {
+		_, clientMsg, err := clientConn.ReadMessage()
+		if err != nil {
+			log.Println("(Client)read: ", err)
+			break
+		}
+		subscribe.Topic = "collection:" + string(clientMsg)
+		openSeaConn.WriteJSON(subscribe)
 	}
 }
