@@ -16,6 +16,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
+var collectionStats model.OpenSeaCollectionStats
 var collection model.OpenSeaCollection
 
 func init() {
@@ -25,11 +26,11 @@ func init() {
 	}
 }
 
-func GetNft(c *gin.Context) {
+func GetCollection(c *gin.Context) {
 
 	collection = model.OpenSeaCollection{}
 	collectionSlug := "persona"
-	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug + "/stats"
+	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -61,8 +62,47 @@ func GetNft(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, collection)
+}
+
+func GetNftStats(c *gin.Context) {
+
+	collectionStats = model.OpenSeaCollectionStats{}
+	collectionSlug := "persona"
+	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug + "/stats"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := json.Unmarshal(body, &collectionStats); err != nil {
+		log.Println("unable to unmarshal json\n")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, collectionStats)
 }
 
 func Socket(c *gin.Context) {

@@ -14,7 +14,8 @@ func main() {
 
 	router.GET("/", controller.Socket)
 	router.GET("/opensea", controller.OpenSeaSocket)
-	router.GET("/getNFT", controller.GetNft)
+	router.GET("/getStats", controller.GetNftStats)
+	router.GET("/getCollection", controller.GetCollection)
 
 	router.Run(":8080")
 }
