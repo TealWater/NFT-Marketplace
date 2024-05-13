@@ -18,6 +18,7 @@ import (
 var upgrader = websocket.Upgrader{}
 var collectionStats model.OpenSeaCollectionStats
 var collection model.OpenSeaCollection
+var event model.OpenSeaCollectionEvent
 
 func init() {
 	err := godotenv.Load(".env")
@@ -103,6 +104,45 @@ func GetNftStats(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, collectionStats)
+}
+
+func GetCollectionEvents(c *gin.Context) {
+	event = model.OpenSeaCollectionEvent{}
+	collectionSlug := "persona"
+	url := "https://api.opensea.io/api/v2/events/collection/" + collectionSlug
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := json.Unmarshal(body, &event); err != nil {
+		log.Println("unable to unmarshal json\n")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, event)
 }
 
 func Socket(c *gin.Context) {
