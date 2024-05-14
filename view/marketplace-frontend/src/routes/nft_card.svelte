@@ -1,45 +1,50 @@
 <script>
+	import { goto } from '$app/navigation';
 	let src =
 		'https://images.pexels.com/photos/23279639/pexels-photo-23279639/free-photo-of-a-solar-eclipse-is-seen-in-the-sky.jpeg';
 
-		let nft = 'https://i.seadn.io/s/raw/files/c8dba01a030a3824ace3cc20521785fa.png'
+	let nft = 'https://i.seadn.io/s/raw/files/c8dba01a030a3824ace3cc20521785fa.png';
+
+	function handleClick(){
+		console.log('clicked');
+		goto('/events/persona');
+	}
 </script>
 
 <article>
 	<section>
 		<span>
-			<img src = {nft} alt="solar eclipse" />
+			<img src={nft} alt="solar eclipse" />
 		</span>
 	</section>
 
 	<section class="info">
-		<span class= "stats">
+		<span class="stats">
 			<h2>Hi mom!</h2>
 		</span>
-		<span class= "stats">
-			<h3>Collection: </h3>
+		<span class="stats">
+			<h3>Collection:</h3>
 		</span>
 
-		<span class= "stats">
-			<h3>Floor Price: </h3>
+		<span class="stats">
+			<h3>Floor Price:</h3>
 		</span>
 
-		<span class= "stats">
+		<span class="stats">
 			<h3>Chain: Ethereum</h3>
 		</span>
 
-		<span class= "stats">
-			<h3>Total supply: </h3>
+		<span class="stats">
+			<h3>Total supply:</h3>
 		</span>
 
 		<span id="button">
-			<button>See Collection Events</button>
+			<button on:click={handleClick}>See Collection Events</button>
 		</span>
 	</section>
 </article>
 
 <style>
-
 	article {
 		display: flex;
 		flex-direction: column;
@@ -58,10 +63,10 @@
 		border-color: orange;
 		border-style: dotted;
 	}
-	article .info{
+	article .info {
 		align-items: left;
 	}
-	#button{
+	#button {
 		display: flex;
 		justify-content: center;
 	}
