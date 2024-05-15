@@ -25,6 +25,10 @@ func init() {
 	if err != nil {
 		log.Fatal("can't load env file")
 	}
+
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return r.Header.Get("Origin") == os.Getenv("TRUSTED_URL")
+	}
 }
 
 func GetCollection(c *gin.Context) {
