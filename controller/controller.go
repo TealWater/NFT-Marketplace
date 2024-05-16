@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/TealWater/NFT-Marketplace/model"
@@ -20,6 +21,7 @@ var collectionStats model.OpenSeaCollectionStats
 var collection model.OpenSeaCollection
 var event model.OpenSeaCollectionEvent
 var collectionSlug string
+var mut sync.Mutex
 
 func init() {
 	err := godotenv.Load(".env")
@@ -197,13 +199,12 @@ func OpenSeaSocket(c *gin.Context) {
 	defer openSeaConn.Close()
 
 	subscribe := model.StreamHeartBeat{
-		Topic:   "collection:persona",
+		Topic:   "collection:",
 		Event:   "phx_join",
 		Payload: struct{}{},
 		Ref:     0,
 	}
 
-	openSeaConn.WriteJSON(subscribe)
 	go HandleHeartBeat(openSeaConn)
 	go UpdateSubscription(conn, openSeaConn, &subscribe)
 
@@ -213,7 +214,9 @@ func OpenSeaSocket(c *gin.Context) {
 			log.Println("(OpenSea)read: ", err)
 			break
 		}
+		mut.Lock()
 		conn.WriteMessage(mt, message)
+		mut.Unlock()
 	}
 }
 
@@ -226,7 +229,9 @@ func HandleHeartBeat(conn *websocket.Conn) {
 	}
 
 	for {
+		mut.Lock()
 		conn.WriteJSON(heartBeat)
+		mut.Unlock()
 		time.Sleep(time.Millisecond * 30000)
 		log.Println("heartbeat sent!")
 	}
@@ -240,6 +245,8 @@ func UpdateSubscription(clientConn *websocket.Conn, openSeaConn *websocket.Conn,
 			break
 		}
 		subscribe.Topic = "collection:" + string(clientMsg)
+		mut.Lock()
 		openSeaConn.WriteJSON(subscribe)
+		mut.Unlock()
 	}
 }

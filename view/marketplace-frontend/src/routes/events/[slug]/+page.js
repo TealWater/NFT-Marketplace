@@ -1,5 +1,5 @@
 /* @type {import('./$types').PageServerLoad} */
-export async function load({fetch, params}) {
+export async function load({ fetch, params }) {
     // @ts-ignore
     const fetchOpenSeaData = async (collection) => {
 
@@ -10,6 +10,7 @@ export async function load({fetch, params}) {
     };
 
     return {
-        opensea: fetchOpenSeaData(params.slug)
+        opensea: fetchOpenSeaData(params.slug),
+        collection: params.slug
     }
 };

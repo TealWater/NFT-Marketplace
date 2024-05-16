@@ -1,6 +1,9 @@
 <script>
+	import { text } from '@sveltejs/kit';
+	import { onDestroy } from 'svelte';
+
 	export let data;
-	const { opensea } = data;
+	const { opensea, collection } = data;
 
 	/**
 	 * @type {any[]}
@@ -8,11 +11,12 @@
 	let messages = [];
 
 	// Create WebSocket connection.
-	const socket = new WebSocket('ws://localhost:8080/opensea');
+	const socket = new WebSocket(`ws://localhost:8080/opensea`);
 
 	// Connection opened
 	socket.addEventListener('open', (event) => {
 		console.log('socket is open');
+		socket.send(`${collection.toString().trim()}`);
 	});
 
 	// Listen for messages
@@ -20,6 +24,8 @@
 		messages = [...messages, event.data];
 		messages.reverse();
 	});
+
+	onDestroy(() => socket.close());
 </script>
 
 <section>
@@ -46,9 +52,9 @@
 		{#await opensea}
 			<p>loading...</p>
 		{:then opensea}
-			<!-- {#each messages as msg}
-			<div>{msg}</div>
-		{/each} -->
+			{#each messages as msg}
+				<div>{msg}</div>
+			{/each}
 
 			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp }}
 				<tr>
