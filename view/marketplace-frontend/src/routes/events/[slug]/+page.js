@@ -4,7 +4,7 @@ export async function load({fetch}) {
 
         const res = await fetch(`http://localhost:8080/getEvents`);
         const data = await res.json();
-        console.log(data.asset_events);
+        // console.log(data.asset_events);
         return data.asset_events;
     };
 
