@@ -2,6 +2,9 @@
 	export let data;
 	const { opensea } = data;
 
+	/**
+	 * @type {any[]}
+	 */
 	let messages = [];
 
 	// Create WebSocket connection.
@@ -47,16 +50,16 @@
 			<div>{msg}</div>
 		{/each} -->
 
-			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp}}
+			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp }}
 				<tr>
 					<td class="event">{order_type}</td>
 					<td class="item">{asset.collection}</td>
-                    <td class="price">{payment.quantity}</td>
-                    <td class="rarity">#</td>
-                    <td class="quantity">{quantity}</td>
-                    <td class="from">{maker}</td>
-                    <td class="to">{taker}</td>
-                    <td class="time">{event_timestamp}</td>
+					<td class="price">{payment.quantity}</td>
+					<td class="rarity">#</td>
+					<td class="quantity">{quantity}</td>
+					<td class="from">{maker}</td>
+					<td class="to">{taker}</td>
+					<td class="time">{event_timestamp}</td>
 				</tr>
 			{/each}
 		{:catch error}
@@ -89,41 +92,41 @@
 		width: 100%;
 	}
 
-    .item{
-        width: 15%;
-        text-align: left;
-    }
-    .price {
-        width: 5%;
-        text-align: right;
-    }
-    .rarity {
-        width: 5%;
-        text-align: right;
-        color: pink;
-    }
+	.item {
+		width: 15%;
+		text-align: left;
+	}
+	.price {
+		width: 5%;
+		text-align: right;
+	}
+	.rarity {
+		width: 5%;
+		text-align: right;
+		color: pink;
+	}
 
-    .quantity {
-        width: 5%;
-        text-align: right;
-        color: red;
-    }
+	.quantity {
+		width: 5%;
+		text-align: right;
+		color: red;
+	}
 
-    .from {
-        width: 30%;
-        text-align: right;
-        color: orange;
-    }
+	.from {
+		width: 30%;
+		text-align: right;
+		color: orange;
+	}
 
-    .to {
-        width: 20%;
-        text-align: right;
-        color: thistle;
-    }
-    
-    .time {
-        width: 10%;
-        text-align: right;
-        color: purple;
-    }
+	.to {
+		width: 20%;
+		text-align: right;
+		color: thistle;
+	}
+
+	.time {
+		width: 10%;
+		text-align: right;
+		color: purple;
+	}
 </style>

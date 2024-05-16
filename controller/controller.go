@@ -19,6 +19,7 @@ var upgrader = websocket.Upgrader{}
 var collectionStats model.OpenSeaCollectionStats
 var collection model.OpenSeaCollection
 var event model.OpenSeaCollectionEvent
+var collectionSlug string
 
 func init() {
 	err := godotenv.Load(".env")
@@ -34,7 +35,7 @@ func init() {
 func GetCollection(c *gin.Context) {
 
 	collection = model.OpenSeaCollection{}
-	collectionSlug := "persona"
+	collectionSlug = c.DefaultQuery("collection", "persona")
 	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug
 
 	client := &http.Client{}
@@ -73,7 +74,7 @@ func GetCollection(c *gin.Context) {
 func GetNftStats(c *gin.Context) {
 
 	collectionStats = model.OpenSeaCollectionStats{}
-	collectionSlug := "persona"
+	collectionSlug = c.DefaultQuery("collection", "persona")
 	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug + "/stats"
 
 	client := &http.Client{}
@@ -112,7 +113,7 @@ func GetNftStats(c *gin.Context) {
 
 func GetCollectionEvents(c *gin.Context) {
 	event = model.OpenSeaCollectionEvent{}
-	collectionSlug := "persona"
+	collectionSlug = c.DefaultQuery("collection", "persona")
 	url := "https://api.opensea.io/api/v2/events/collection/" + collectionSlug
 
 	client := &http.Client{}
