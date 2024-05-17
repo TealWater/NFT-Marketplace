@@ -24,7 +24,7 @@
 			<h2>Hi mom!</h2>
 		</span>
 		<span class="stats">
-			<h3>Collection: {collection}</h3>
+			<h3 style="display: inline;">Collection: {collection}</h3>
 		</span>
 
 		<span class="stats">

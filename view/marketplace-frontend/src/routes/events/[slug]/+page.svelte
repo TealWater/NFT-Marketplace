@@ -1,7 +1,5 @@
 <script>
-	import { text } from '@sveltejs/kit';
 	import { onDestroy } from 'svelte';
-
 	export let data;
 	const { opensea, collection } = data;
 
