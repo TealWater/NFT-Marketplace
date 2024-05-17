@@ -20,6 +20,7 @@ var upgrader = websocket.Upgrader{}
 var collectionStats model.OpenSeaCollectionStats
 var collection model.OpenSeaCollection
 var event model.OpenSeaCollectionEvent
+var topCollections model.TopOpenSeaNFTCollections
 var collectionSlug string
 var mut sync.Mutex
 
@@ -29,11 +30,17 @@ func init() {
 		log.Fatal("can't load env file")
 	}
 
+	//For the websocket
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return r.Header.Get("Origin") == os.Getenv("TRUSTED_URL")
 	}
 }
 
+/*
+GetCollection returns info about a NFT Collection listed on Opensea.
+
+Collection details include fees, traits, and links.
+*/
 func GetCollection(c *gin.Context) {
 
 	collection = model.OpenSeaCollection{}
@@ -66,13 +73,16 @@ func GetCollection(c *gin.Context) {
 	}
 
 	if err := json.Unmarshal(body, &collection); err != nil {
-		log.Println("unable to unmarshal json\n")
+		log.Println("unable to unmarshal json")
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, collection)
 }
 
+/*
+GetNftStats returns stats about a single NFT Collection
+*/
 func GetNftStats(c *gin.Context) {
 
 	collectionStats = model.OpenSeaCollectionStats{}
@@ -105,14 +115,16 @@ func GetNftStats(c *gin.Context) {
 	}
 
 	if err := json.Unmarshal(body, &collectionStats); err != nil {
-		log.Println("unable to unmarshal json\n")
+		log.Println("unable to unmarshal json")
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, collectionStats)
 }
 
+/*
+GetCollectionEvents returns the 50 most recent events for a NFT Collection
+*/
 func GetCollectionEvents(c *gin.Context) {
 	event = model.OpenSeaCollectionEvent{}
 	collectionSlug = c.DefaultQuery("collection", "persona")
@@ -144,12 +156,56 @@ func GetCollectionEvents(c *gin.Context) {
 	}
 
 	if err := json.Unmarshal(body, &event); err != nil {
-		log.Println("unable to unmarshal json\n")
+		log.Println("unable to unmarshal json")
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, event)
+}
+
+/*
+GetTopNFTCollections returns the top NFT Collections on Opensea.com based on market cap.
+
+Will return 50 NFTs by default, upper limit is 100
+*/
+func GetTopNFTCollections(c *gin.Context) {
+	topCollections = model.TopOpenSeaNFTCollections{}
+	count := c.DefaultQuery("limit", "50")
+	url := "https://api.opensea.io/api/v2/collections?chain=ethereum&order_by=market_cap&limit=" + count
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := json.Unmarshal(body, &topCollections); err != nil {
+		log.Println("unable to unmarshal json")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, topCollections)
 }
 
 func Socket(c *gin.Context) {
@@ -179,6 +235,10 @@ func Socket(c *gin.Context) {
 	}
 }
 
+/*
+OpenSeaSocket provides a websocket connection to Opensea.com to subscribe to NTF events
+in real-time.
+*/
 func OpenSeaSocket(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -205,8 +265,8 @@ func OpenSeaSocket(c *gin.Context) {
 		Ref:     0,
 	}
 
-	go HandleHeartBeat(openSeaConn)
-	go UpdateSubscription(conn, openSeaConn, &subscribe)
+	go handleHeartbeat(openSeaConn)
+	go updateSubscription(conn, openSeaConn, &subscribe)
 
 	for {
 		mt, message, err := openSeaConn.ReadMessage()
@@ -220,7 +280,13 @@ func OpenSeaSocket(c *gin.Context) {
 	}
 }
 
-func HandleHeartBeat(conn *websocket.Conn) {
+/*
+handleHeartbeat send a heartbeat message to Opensea.com websocket to keep the
+connection alive in 30 second intervals.
+
+Is safe to run concurrently.
+*/
+func handleHeartbeat(conn *websocket.Conn) {
 	heartBeat := model.StreamHeartBeat{
 		Topic:   "phoenix",
 		Event:   "heartbeat",
@@ -237,7 +303,12 @@ func HandleHeartBeat(conn *websocket.Conn) {
 	}
 }
 
-func UpdateSubscription(clientConn *websocket.Conn, openSeaConn *websocket.Conn, subscribe *model.StreamHeartBeat) {
+/*
+updateSubscription allows the client to subscribe to NFT events.
+
+Is safe to run concurrently.
+*/
+func updateSubscription(clientConn *websocket.Conn, openSeaConn *websocket.Conn, subscribe *model.StreamHeartBeat) {
 	for {
 		_, clientMsg, err := clientConn.ReadMessage()
 		if err != nil {

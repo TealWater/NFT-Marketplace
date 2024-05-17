@@ -149,3 +149,31 @@ type OpenSeaCollectionEvent struct {
 	} `json:"asset_events"`
 	Next string `json:"next"`
 }
+
+type TopOpenSeaNFTCollections struct {
+	Collections []struct {
+		Collection              string `json:"collection"`
+		Name                    string `json:"name"`
+		Description             string `json:"description"`
+		ImageURL                string `json:"image_url"`
+		BannerImageURL          string `json:"banner_image_url"`
+		Owner                   string `json:"owner"`
+		SafelistStatus          string `json:"safelist_status"`
+		Category                string `json:"category"`
+		IsDisabled              bool   `json:"is_disabled"`
+		IsNsfw                  bool   `json:"is_nsfw"`
+		TraitOffersEnabled      bool   `json:"trait_offers_enabled"`
+		CollectionOffersEnabled bool   `json:"collection_offers_enabled"`
+		OpenseaURL              string `json:"opensea_url"`
+		ProjectURL              string `json:"project_url"`
+		WikiURL                 string `json:"wiki_url"`
+		DiscordURL              string `json:"discord_url"`
+		TelegramURL             string `json:"telegram_url"`
+		TwitterUsername         string `json:"twitter_username"`
+		InstagramUsername       string `json:"instagram_username"`
+		Contracts               []struct {
+			Address string `json:"address"`
+		} `json:"contracts"`
+	} `json:"collections"`
+	Next string `json:"next"`
+}
