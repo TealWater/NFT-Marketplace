@@ -1,5 +1,6 @@
 <script>
 	import { onDestroy } from 'svelte';
+	import {CreateNFTEvent} from '$lib/util/parse.js';
 	export let data;
 	const { opensea, collection } = data;
 
@@ -19,7 +20,8 @@
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
-		messages = [...messages, event.data];
+		// messages = [...messages, JSON.parse(event.data)];
+		messages = [...messages, CreateNFTEvent(event.data)];
 		messages.reverse();
 	});
 
@@ -50,8 +52,18 @@
 		{#await opensea}
 			<p>loading...</p>
 		{:then opensea}
-			{#each messages as msg}
-				<div>{msg}</div>
+			{#each messages as {collection, event, chain, timestamp, quantity}}
+				<!-- <div>{event}</div> -->
+				<tr>
+					<td class="event">{event}</td>
+					<td class="item">{collection}</td>
+					<td class="price">#</td>
+					<td class="rarity">#</td>
+					<td class="quantity">{quantity}</td>
+					<td class="from">#</td>
+					<td class="to">#</td>
+					<td class="time">{timestamp}</td>
+				</tr>
 			{/each}
 
 			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp }}
