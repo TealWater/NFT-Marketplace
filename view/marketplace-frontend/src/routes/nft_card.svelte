@@ -7,7 +7,7 @@
 	let nft = 'https://i.seadn.io/s/raw/files/c8dba01a030a3824ace3cc20521785fa.png';
 
 	function handleClick() {
-		console.log('clicked');
+		// console.log('clicked');
 		goto(`/events/${collection}`);
 	}
 </script>
@@ -21,14 +21,14 @@
 
 	<section class="info">
 		<span class="stats">
-			<h2>Hi mom!</h2>
+			<!-- <h2>Hi mom!</h2> -->
 		</span>
 		<span class="stats">
 			<h3 style="display: inline;">Collection: {collection}</h3>
 		</span>
 
 		<span class="stats">
-			<h3>Floor Price:</h3>
+			<!-- <h3>Floor Price:</h3> -->
 		</span>
 
 		<span class="stats">
@@ -36,7 +36,7 @@
 		</span>
 
 		<span class="stats">
-			<h3>Total supply:</h3>
+			<!-- <h3>Total supply:</h3> -->
 		</span>
 
 		<span id="button">
