@@ -1,16 +1,19 @@
 import { json } from "@sveltejs/kit"
+import NftCard from "../../routes/nft_card.svelte";
 
 /**
  * @param {string} message
  */
-export function CreateNFTEvent(message){
+export function CreateNFTEventFromSocket(message){
 
     let nft_event = {
         collection: '',
         event: '',
         chain: '',
         timestamp: '',
-        quantity: 0
+        quantity: 0,
+        maker: '',
+        taker:''
     }
 
     const event = JSON.parse(message)
@@ -26,6 +29,7 @@ export function CreateNFTEvent(message){
     nft_event.collection = event_payload_data.payload.collection.slug
     nft_event.timestamp = event_payload.payload.event_timestamp;
     nft_event.quantity = event_payload.payload.quantity;
+    nft_event.maker = event_payload.payload.maker.address;
 
     return nft_event;
 }

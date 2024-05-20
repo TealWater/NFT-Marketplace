@@ -1,8 +1,25 @@
 <script>
-	import { onDestroy } from 'svelte';
-	import {CreateNFTEvent} from '$lib/util/parse.js';
+	import { onDestroy, onMount } from 'svelte';
+	import { CreateNFTEventFromSocket } from '$lib/util/parse.js';
+	import EventRow from './event_row.svelte';
 	export let data;
 	const { opensea, collection } = data;
+
+	let startTime;
+	let elapsedTime = 0;
+	let timer;
+	onMount(() => {
+		startTime = Date.parse('2024-05-19T19:47:52.777562+00:00');
+		const interval = setInterval(() => {
+			elapsedTime = Date.now() - startTime;
+		}, 1000);
+		const time = new Date(interval);
+		console.log('**: ', time.toLocaleTimeString());
+
+		return () => {
+			clearInterval(interval);
+		};
+	});
 
 	/**
 	 * @type {any[]}
@@ -20,8 +37,7 @@
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
-		// messages = [...messages, JSON.parse(event.data)];
-		messages = [...messages, CreateNFTEvent(event.data)];
+		messages = [...messages, CreateNFTEventFromSocket(event.data)];
 		messages.reverse();
 	});
 
@@ -52,51 +68,18 @@
 		{#await opensea}
 			<p>loading...</p>
 		{:then opensea}
-			{#each messages as {collection, event, chain, timestamp, quantity}}
-				<!-- <div>{event}</div> -->
-				<tr>
-					<td class="event">{event}</td>
-					<td class="item">{collection}</td>
-					<td class="price">#</td>
-					<td class="rarity">#</td>
-					<td class="quantity">{quantity}</td>
-					<td class="from">#</td>
-					<td class="to">#</td>
-					<td class="time">{timestamp}</td>
-				</tr>
+			{#each messages as { collection, event, timestamp, quantity, maker }}
+				<EventRow {collection} {event} {timestamp} {quantity} {maker}></EventRow>
 			{/each}
 
 			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp }}
-				<tr>
-					<td class="event">{order_type}</td>
-					<td class="item">{asset.collection}</td>
-					<td class="price">{payment.quantity}</td>
-					<td class="rarity">#</td>
-					<td class="quantity">{quantity}</td>
-					<td class="from">{maker}</td>
-					<td class="to">{taker}</td>
-					<td class="time">{event_timestamp}</td>
-				</tr>
+				<EventRow {order_type} {asset} {payment} {quantity} {maker} {taker} {event_timestamp}
+				></EventRow>
 			{/each}
 		{:catch error}
 			<p>{error.message}</p>
 		{/await}
 	</table>
-
-	<!-- {#await opensea}
-		<p>loading...</p>
-	{:then opensea} -->
-	<!-- {#each messages as msg}
-			<div>{msg}</div>
-		{/each} -->
-
-	<!-- {#each opensea as { order_type }}
-			<div>{order_type}</div>
-		{/each}
-	{:catch error}
-		<p>{error.message}</p>
-	{/await} -->
-	<!-- <hr> -->
 </section>
 
 <style>

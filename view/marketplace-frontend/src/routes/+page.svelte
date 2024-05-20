@@ -19,7 +19,7 @@
 		{/each}
 	{/await}
 
-	<NftCard {collection}></NftCard>
+	<!-- <NftCard {collection}></NftCard> -->
 </section>
 
 <style>
