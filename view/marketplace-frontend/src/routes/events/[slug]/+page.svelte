@@ -5,22 +5,6 @@
 	export let data;
 	const { opensea, collection } = data;
 
-	let startTime;
-	let elapsedTime = 0;
-	let timer;
-	onMount(() => {
-		startTime = Date.parse('2024-05-19T19:47:52.777562+00:00');
-		const interval = setInterval(() => {
-			elapsedTime = Date.now() - startTime;
-		}, 1000);
-		const time = new Date(interval);
-		console.log('**: ', time.toLocaleTimeString());
-
-		return () => {
-			clearInterval(interval);
-		};
-	});
-
 	/**
 	 * @type {any[]}
 	 */

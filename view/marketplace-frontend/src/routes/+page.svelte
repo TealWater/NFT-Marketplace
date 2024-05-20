@@ -9,7 +9,7 @@
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 <section>
-	{#await opensea}
+	<!-- {#await opensea}
 		<p>loading...</p>
 	{:then opensea}
 		{#each opensea as { collection }}
@@ -17,9 +17,9 @@
 			<NftCard {collection}></NftCard>
 		</div>
 		{/each}
-	{/await}
+	{/await} -->
 
-	<!-- <NftCard {collection}></NftCard> -->
+	<NftCard {collection}></NftCard>
 </section>
 
 <style>
