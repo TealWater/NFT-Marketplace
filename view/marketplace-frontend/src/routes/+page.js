@@ -1,4 +1,5 @@
 /* @type {import('./$types').PageLoad} */
+import { PUBLIC_TRUSTED_URL } from '$env/static/public';
 import { collection_count } from '$lib/stores/store.js';
 export async function load({fetch}) {
 
@@ -9,7 +10,7 @@ export async function load({fetch}) {
 
     // @ts-ignore
     const fetchTopOpenseaCollections = async (str) => {
-        const res = await fetch(`http://localhost:8080/getTopCollections?limit=${str}`);
+        const res = await fetch(`${PUBLIC_TRUSTED_URL}/getTopCollections?limit=${str}`);
         const data = await res.json();
         return data.collections;
     }
