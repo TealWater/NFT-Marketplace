@@ -12,7 +12,7 @@
 	let messages = [];
 
 	// Create WebSocket connection.
-	const socket = new WebSocket(`ws://${PUBLIC_TRUSTED_URL}/opensea`);
+	const socket = new WebSocket(`wss://${PUBLIC_TRUSTED_URL}/opensea`);
 
 	// Connection opened
 	socket.addEventListener('open', (event) => {
