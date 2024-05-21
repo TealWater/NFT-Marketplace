@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import { CreateNFTEventFromSocket } from '$lib/util/parse.js';
-	import { PUBLIC_TRUSTED_URL } from '$env/static/public';
+	import { PUBLIC_TRUSTED_URL, PUBLIC_SOCKET } from '$env/static/public';
 	import EventRow from './event_row.svelte';
 	export let data;
 	const { opensea, collection } = data;
@@ -12,7 +12,7 @@
 	let messages = [];
 
 	// Create WebSocket connection.
-	const socket = new WebSocket(`wss://${PUBLIC_TRUSTED_URL}/opensea`);
+	const socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
 
 	// Connection opened
 	socket.addEventListener('open', (event) => {
