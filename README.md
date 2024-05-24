@@ -1,7 +1,7 @@
 # NFT-Marketplace
 A website that aggregates NFTs from multiple sources to allow you to search, buy and sell
 
-The inspiration for this repo is the be a clone of `www.gem.xyz`
+The inspiration for this repo is to be a clone of `www.gem.xyz`
 
 **This repo is a work in progress, new features will be rolled out intermittently.**
 <br>

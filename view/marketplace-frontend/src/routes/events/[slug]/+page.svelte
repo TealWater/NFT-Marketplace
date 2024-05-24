@@ -12,10 +12,14 @@
 	 */
 	let messages = [];
 
+	/**
+	 * @type {WebSocket}
+	 */
+	let socket;
 	onMount(() =>{
 		
 		// Create WebSocket connection.
-		const socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
+		socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
 	
 		// Connection opened
 		socket.addEventListener('open', (event) => {
@@ -29,8 +33,9 @@
 			messages.reverse();
 		});
 
-		onDestroy(() => socket.close());
 	})
+	
+	onDestroy(() => socket.close());
 
 </script>
 
