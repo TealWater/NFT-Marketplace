@@ -19,7 +19,7 @@
 	onMount(() =>{
 		
 		// Create WebSocket connection.
-		socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
+		socket = new WebSocket(`ws://${PUBLIC_SOCKET}/opensea`);
 	
 		// Connection opened
 		socket.addEventListener('open', (event) => {

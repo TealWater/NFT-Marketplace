@@ -42,7 +42,6 @@ GetCollection returns info about a NFT Collection listed on Opensea.
 Collection details include fees, traits, and links.
 */
 func GetCollection(c *gin.Context) {
-
 	collection = model.OpenSeaCollection{}
 	collectionSlug = c.DefaultQuery("collection", "persona")
 	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug
@@ -84,7 +83,6 @@ func GetCollection(c *gin.Context) {
 GetNftStats returns stats about a single NFT Collection
 */
 func GetNftStats(c *gin.Context) {
-
 	collectionStats = model.OpenSeaCollectionStats{}
 	collectionSlug = c.DefaultQuery("collection", "persona")
 	url := "https://api.opensea.io/api/v2/collections/" + collectionSlug + "/stats"
@@ -206,6 +204,45 @@ func GetTopNFTCollections(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, topCollections)
+}
+
+func GetNftsByCollection(c *gin.Context) {
+	nft := &model.OpenSeaNFT{}
+	collection := c.DefaultQuery("collection", "persona")
+	url := "https://api.opensea.io/api/v2/collection/" + collection + "/nfts?limit=200"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := json.Unmarshal(body, nft); err != nil {
+		log.Println("unable to unmarshal json")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, nft)
 }
 
 func Socket(c *gin.Context) {

@@ -22,6 +22,7 @@ func main() {
 	}))
 
 	router.GET("/", controller.Socket)
+	router.GET("/getNFT", controller.GetNftsByCollection)
 	router.GET("/opensea", controller.OpenSeaSocket)
 	router.GET("/getStats", controller.GetNftStats)
 	router.GET("/getCollection", controller.GetCollection)

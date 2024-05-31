@@ -1,31 +1,32 @@
 <script>
-	import { collection_count } from '$lib/stores/store';
-	import NftCard from './nft_card.svelte';
+	/** @type {import('./$types').PageData} */
+	import NftCard from '../../nft_card.svelte';
 	export let data;
 	const { opensea } = data;
-	let collection = 'persona';
 </script>
 
 <section>
 	{#await opensea}
 		<p>loading...</p>
 	{:then opensea}
-		{#each opensea as { collection, image_url }}
-		<div>
-			<NftCard {collection} {image_url}></NftCard>
-		</div>
+		{#each opensea as { collection, name, image_url }}
+			<div>
+				<NftCard {collection} {image_url}></NftCard>
+			</div>
 		{/each}
+	{:catch error}
+		<p>{error.message}</p>
 	{/await}
 </section>
 
 <style>
-	section{
+	section {
 		display: flex;
 		flex-wrap: wrap;
 		align-content: space-between;
 		margin-left: 20px;
 	}
-	div{
+	div {
 		margin: 10px;
 	}
 </style>

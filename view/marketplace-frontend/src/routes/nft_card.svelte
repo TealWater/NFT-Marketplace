@@ -1,21 +1,23 @@
 <script>
 	import { goto } from '$app/navigation';
 	export let collection = '';
-	let src =
-		'https://images.pexels.com/photos/23279639/pexels-photo-23279639/free-photo-of-a-solar-eclipse-is-seen-in-the-sky.jpeg';
+	export let image_url = '';
 
-	let nft = 'https://i.seadn.io/s/raw/files/c8dba01a030a3824ace3cc20521785fa.png';
-
-	function handleClick() {
+	function handleClickCollectionEvent() {
 		// console.log('clicked');
 		goto(`/events/${collection}`);
+	}
+
+	function handleClickViewCollection() {
+		// console.log('clicked');
+		goto(`/collection/${collection}`);
 	}
 </script>
 
 <article>
 	<section>
 		<span>
-			<img src={nft} alt="solar eclipse" />
+			<img src={image_url} alt="solar eclipse" />
 		</span>
 	</section>
 
@@ -40,7 +42,8 @@
 		</span>
 
 		<span id="button">
-			<button on:click={handleClick}>See Collection Events</button>
+			<button on:click={handleClickCollectionEvent}>See Collection Events</button>
+			<button on:click={handleClickViewCollection}>See Collection</button>
 		</span>
 	</section>
 </article>
@@ -56,10 +59,13 @@
 		box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 		padding: 1em;
 		/* align-items: center; */
+		min-height: 425px;
 	}
 	img {
-		max-width: 300px;
-		max-height: 300px;
+		width: 300px;
+		height: 300px;
+		/* min-width: 300px; */
+		/* min-height: 300px; */
 		margin-left: -4px;
 		border-color: orange;
 		border-style: dotted;
@@ -70,5 +76,8 @@
 	#button {
 		display: flex;
 		justify-content: center;
+	}
+	button{
+		margin-left: 5px;
 	}
 </style>

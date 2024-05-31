@@ -177,3 +177,21 @@ type TopOpenSeaNFTCollections struct {
 	} `json:"collections"`
 	Next string `json:"next"`
 }
+
+type OpenSeaNFT struct {
+	Nfts []struct {
+		Identifier    string `json:"identifier"`
+		Collection    string `json:"collection"`
+		Contract      string `json:"contract"`
+		TokenStandard string `json:"token_standard"`
+		Name          string `json:"name"`
+		Description   string `json:"description"`
+		ImageURL      string `json:"image_url"`
+		MetadataURL   string `json:"metadata_url"`
+		OpenseaURL    string `json:"opensea_url"`
+		UpdatedAt     string `json:"updated_at"`
+		IsDisabled    bool   `json:"is_disabled"`
+		IsNsfw        bool   `json:"is_nsfw"`
+	} `json:"nfts"`
+	Next string `json:"next"`
+}
