@@ -1,6 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData} */
-	import NftCard from '../../nft_card.svelte';
+	import NftListing from './nft_listing.svelte';
 	export let data;
 	const { opensea } = data;
 </script>
@@ -9,9 +9,9 @@
 	{#await opensea}
 		<p>loading...</p>
 	{:then opensea}
-		{#each opensea as { collection, name, image_url }}
+		{#each opensea as { collection, name, image_url, price, currency, identifier }}
 			<div>
-				<NftCard {collection} {image_url}></NftCard>
+				<NftListing {name} {identifier} {image_url} {price} {currency}></NftListing>
 			</div>
 		{/each}
 	{:catch error}
