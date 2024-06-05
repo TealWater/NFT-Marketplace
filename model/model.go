@@ -180,6 +180,72 @@ type TopOpenSeaNFTCollections struct {
 
 type OpenSeaNFT struct {
 	Nfts []struct {
+		Identifier    string  `json:"identifier"`
+		Collection    string  `json:"collection"`
+		Contract      string  `json:"contract"`
+		TokenStandard string  `json:"token_standard"`
+		Name          string  `json:"name"`
+		Description   string  `json:"description"`
+		ImageURL      string  `json:"image_url"`
+		MetadataURL   string  `json:"metadata_url"`
+		OpenseaURL    string  `json:"opensea_url"`
+		UpdatedAt     string  `json:"updated_at"`
+		IsDisabled    bool    `json:"is_disabled"`
+		IsNsfw        bool    `json:"is_nsfw"`
+		Price         float64 `json:"price"`
+		Currency      string  `json:"currency"`
+	} `json:"nfts"`
+	Next string `json:"next"`
+}
+
+type OpenSeaNFTListing struct {
+	Listings []struct {
+		OrderHash string `json:"order_hash"`
+		Type      string `json:"type"`
+		Price     struct {
+			Current struct {
+				Currency string `json:"currency"`
+				Decimals int    `json:"decimals"`
+				Value    string `json:"value"`
+			} `json:"current"`
+		} `json:"price"`
+		ProtocolData struct {
+			Parameters struct {
+				Offerer string `json:"offerer"`
+				Offer   []struct {
+					ItemType             int    `json:"itemType"`
+					Token                string `json:"token"`
+					IdentifierOrCriteria string `json:"identifierOrCriteria"`
+					StartAmount          string `json:"startAmount"`
+					EndAmount            string `json:"endAmount"`
+				} `json:"offer"`
+				Consideration []struct {
+					ItemType             int    `json:"itemType"`
+					Token                string `json:"token"`
+					IdentifierOrCriteria string `json:"identifierOrCriteria"`
+					StartAmount          string `json:"startAmount"`
+					EndAmount            string `json:"endAmount"`
+					Recipient            string `json:"recipient"`
+				} `json:"consideration"`
+				StartTime                       string      `json:"startTime"`
+				EndTime                         string      `json:"endTime"`
+				OrderType                       int         `json:"orderType"`
+				Zone                            string      `json:"zone"`
+				ZoneHash                        string      `json:"zoneHash"`
+				Salt                            string      `json:"salt"`
+				ConduitKey                      string      `json:"conduitKey"`
+				TotalOriginalConsiderationItems int         `json:"totalOriginalConsiderationItems"`
+				Counter                         interface{} `json:"counter"`
+			} `json:"parameters"`
+			Signature string `json:"signature"`
+		} `json:"protocol_data"`
+		ProtocolAddress string `json:"protocol_address"`
+	} `json:"listings"`
+	Next string `json:"next"`
+}
+
+type SingleOpenSeaNFT struct {
+	Nft struct {
 		Identifier    string `json:"identifier"`
 		Collection    string `json:"collection"`
 		Contract      string `json:"contract"`
@@ -192,6 +258,28 @@ type OpenSeaNFT struct {
 		UpdatedAt     string `json:"updated_at"`
 		IsDisabled    bool   `json:"is_disabled"`
 		IsNsfw        bool   `json:"is_nsfw"`
-	} `json:"nfts"`
-	Next string `json:"next"`
+		AnimationURL  any    `json:"animation_url"`
+		IsSuspicious  bool   `json:"is_suspicious"`
+		Creator       string `json:"creator"`
+		Traits        []struct {
+			TraitType   string `json:"trait_type"`
+			DisplayType any    `json:"display_type"`
+			MaxValue    any    `json:"max_value"`
+			Value       any    `json:"value"`
+		} `json:"traits"`
+		Owners []struct {
+			Address  string `json:"address"`
+			Quantity int    `json:"quantity"`
+		} `json:"owners"`
+		Rarity struct {
+			StrategyID      any    `json:"strategy_id"`
+			StrategyVersion any    `json:"strategy_version"`
+			Rank            int    `json:"rank"`
+			Score           any    `json:"score"`
+			CalculatedAt    string `json:"calculated_at"`
+			MaxRank         any    `json:"max_rank"`
+			TokensScored    int    `json:"tokens_scored"`
+			RankingFeatures any    `json:"ranking_features"`
+		} `json:"rarity"`
+	} `json:"nft"`
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"log"
@@ -207,9 +208,17 @@ func GetTopNFTCollections(c *gin.Context) {
 }
 
 func GetNftsByCollection(c *gin.Context) {
-	nft := &model.OpenSeaNFT{}
+	nftListing := &model.OpenSeaNFTListing{}
+	nfts := &model.OpenSeaNFT{}
 	collection := c.DefaultQuery("collection", "persona")
-	url := "https://api.opensea.io/api/v2/collection/" + collection + "/nfts?limit=200"
+	next := ""
+	// isDone := false
+
+	//for loop will be used for pagination
+	// for !isDone {
+	url := "https://api.opensea.io/api/v2/listings/collection/" + collection + "/all?limit=100&next=" + next
+
+	currentNFTListingRequest := &model.OpenSeaNFTListing{}
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -236,13 +245,129 @@ func GetNftsByCollection(c *gin.Context) {
 		return
 	}
 
-	if err := json.Unmarshal(body, nft); err != nil {
+	if err := json.Unmarshal(body, currentNFTListingRequest); err != nil {
 		log.Println("unable to unmarshal json")
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	// log.Println(nft.Next)
 
-	c.JSON(http.StatusOK, nft)
+	nftListing.Listings = append(nftListing.Listings, currentNFTListingRequest.Listings...)
+
+	next = currentNFTListingRequest.Next
+	// if len(next) == 0 {
+	// 	isDone = true
+	// }
+
+	// }
+
+	for idx := range nftListing.Listings {
+		singleNFT, err := getSingleOpenSeaNFT(c, *nftListing, idx)
+		if err != nil {
+			log.Println("There is an issue with getting a single nft")
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		nfts.Nfts = append(nfts.Nfts, singleNFT.Nfts...)
+	}
+	c.JSON(http.StatusOK, nfts)
+}
+
+func getSingleOpenSeaNFT(c *gin.Context, nft model.OpenSeaNFTListing, idx int) (model.OpenSeaNFT, error) {
+	chain := "ethereum"
+	address := nft.Listings[idx].ProtocolData.Parameters.Offer[0].Token
+	identifier := nft.Listings[idx].ProtocolData.Parameters.Offer[0].IdentifierOrCriteria
+	singleOpenSeaNFT := &model.SingleOpenSeaNFT{}
+	builtNFT := model.OpenSeaNFT{}
+
+	url := "https://api.opensea.io/api/v2/chain/" + chain + "/contract/" + address + "/nfts/" + identifier
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return builtNFT, err
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return builtNFT, err
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return builtNFT, err
+	}
+
+	if err := json.Unmarshal(body, singleOpenSeaNFT); err != nil {
+		log.Println("unable to unmarshal json")
+		log.Println("inner method! getOpenSeaNFT")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return builtNFT, err
+	}
+
+	//build the nft
+	//can append an nft struct to an empty slice
+	builtNFT.Nfts = make([]struct {
+		Identifier    string  "json:\"identifier\""
+		Collection    string  "json:\"collection\""
+		Contract      string  "json:\"contract\""
+		TokenStandard string  "json:\"token_standard\""
+		Name          string  "json:\"name\""
+		Description   string  "json:\"description\""
+		ImageURL      string  "json:\"image_url\""
+		MetadataURL   string  "json:\"metadata_url\""
+		OpenseaURL    string  "json:\"opensea_url\""
+		UpdatedAt     string  "json:\"updated_at\""
+		IsDisabled    bool    "json:\"is_disabled\""
+		IsNsfw        bool    "json:\"is_nsfw\""
+		Price         float64 "json:\"price\""
+		Currency      string  "json:\"currency\""
+	}, 1)
+	builtNFT.Nfts[0].Identifier = singleOpenSeaNFT.Nft.Identifier
+	builtNFT.Nfts[0].Collection = singleOpenSeaNFT.Nft.Collection
+	builtNFT.Nfts[0].Contract = singleOpenSeaNFT.Nft.Contract
+	builtNFT.Nfts[0].TokenStandard = singleOpenSeaNFT.Nft.TokenStandard
+	builtNFT.Nfts[0].Name = singleOpenSeaNFT.Nft.Name
+	builtNFT.Nfts[0].Description = singleOpenSeaNFT.Nft.Description
+	builtNFT.Nfts[0].ImageURL = singleOpenSeaNFT.Nft.ImageURL
+	builtNFT.Nfts[0].MetadataURL = singleOpenSeaNFT.Nft.MetadataURL
+	builtNFT.Nfts[0].OpenseaURL = singleOpenSeaNFT.Nft.OpenseaURL
+	builtNFT.Nfts[0].UpdatedAt = singleOpenSeaNFT.Nft.UpdatedAt
+	builtNFT.Nfts[0].IsDisabled = singleOpenSeaNFT.Nft.IsDisabled
+	builtNFT.Nfts[0].IsNsfw = singleOpenSeaNFT.Nft.IsNsfw
+
+	stringPrice := nft.Listings[idx].Price.Current.Value
+	decimal := nft.Listings[idx].Price.Current.Decimals
+	decimalPlacement := len(stringPrice) - decimal
+	//len(str) - decimal --> decimal placement
+
+	// log.Println("price: ", stringPrice, "\ndecimals: ", decimal, "\ndecimal placement: ", decimalPlacement, "\nstring len: ", len(stringPrice))
+
+	var buffer bytes.Buffer
+	if decimalPlacement < 0 {
+		buffer.WriteString("0.")
+		for decimalPlacement < 0 {
+			buffer.WriteString("0")
+			decimalPlacement++
+		}
+		buffer.WriteString(stringPrice)
+	} else {
+		buffer.WriteString(stringPrice[:decimalPlacement])
+		buffer.WriteString(".")
+		buffer.WriteString(stringPrice[decimalPlacement:])
+	}
+
+	builtNFT.Nfts[0].Price, _ = strconv.ParseFloat(buffer.String(), 32)
+	builtNFT.Nfts[0].Currency = nft.Listings[idx].Price.Current.Currency
+	return builtNFT, nil
 }
 
 func Socket(c *gin.Context) {
