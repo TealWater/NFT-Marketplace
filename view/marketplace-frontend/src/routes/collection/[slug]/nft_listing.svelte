@@ -9,6 +9,7 @@
     if(name == ''){
         name = identifier;
     }
+	price = Number.parseFloat(price).toFixed(2);
 
 	function handleClickCollectionEvent() {
 		// console.log('clicked');
