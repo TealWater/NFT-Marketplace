@@ -28,6 +28,7 @@ func main() {
 	router.GET("/getCollection", controller.GetCollection)
 	router.GET("/getEvents", controller.GetCollectionEvents)
 	router.GET("/getTopCollections", controller.GetTopNFTCollections)
+	router.GET("/getGas", controller.GetEthGas)
 
 	router.Run(":8080")
 }
