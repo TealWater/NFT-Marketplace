@@ -2,12 +2,9 @@ package controller
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
-	"math/big"
 	"net/http"
 	"os"
 	"strconv"
@@ -494,23 +491,4 @@ func updateSubscription(clientConn *websocket.Conn, openSeaConn *websocket.Conn,
 		openSeaConn.WriteJSON(subscribe)
 		mut.Unlock()
 	}
-}
-
-/*
-GetEthGas - returns the minimun amount of gas required to complete a transaction on
-the block, actual gas requre may vary at the time of the transaction
-
-TODO: add safeExit() func to return gracefully if there is an error
-*/
-func GetEthGas(c *gin.Context) {
-	c.Request.Header.Add("Content-Type:", "application/json")
-	val, err := ethConn.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Println("unable to fetch a gas price: ", err)
-	}
-	ethGasInWEI := new(big.Float).SetInt(val)
-	oneBilliion := big.NewFloat(1000000000)
-	ethGasInGwei := new(big.Float).Quo(ethGasInWEI, oneBilliion)
-
-	c.JSON(http.StatusAccepted, fmt.Sprintf("%.2f gWEI", ethGasInGwei))
 }

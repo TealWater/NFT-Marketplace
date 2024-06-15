@@ -28,7 +28,7 @@ func main() {
 	router.GET("/getCollection", controller.GetCollection)
 	router.GET("/getEvents", controller.GetCollectionEvents)
 	router.GET("/getTopCollections", controller.GetTopNFTCollections)
-	router.GET("/getGas", controller.GetEthGas)
+	router.POST("/stream", controller.HandleMiddleware(), controller.Stream.ServeHTTP(), controller.StreamGasPrice)
 
 	router.Run(":8080")
 }
