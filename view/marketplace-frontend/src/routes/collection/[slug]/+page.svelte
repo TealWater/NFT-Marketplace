@@ -25,6 +25,7 @@
 		flex-wrap: wrap;
 		align-content: space-between;
 		margin-left: 20px;
+		padding-top: 60px;
 	}
 	div {
 		margin: 10px;

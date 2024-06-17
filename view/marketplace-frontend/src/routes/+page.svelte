@@ -11,21 +11,22 @@
 		<p>loading...</p>
 	{:then opensea}
 		{#each opensea as { collection, image_url }}
-		<div>
-			<NftCard {collection} {image_url}></NftCard>
-		</div>
+			<div>
+				<NftCard {collection} {image_url}></NftCard>
+			</div>
 		{/each}
 	{/await}
 </section>
 
 <style>
-	section{
+	section {
 		display: flex;
 		flex-wrap: wrap;
 		align-content: space-between;
 		margin-left: 20px;
+		padding-top: 60px;
 	}
-	div{
+	div {
 		margin: 10px;
 	}
 </style>
