@@ -1,5 +1,6 @@
 <script>
 	import { collection_count } from '$lib/stores/store';
+	import { error } from '@sveltejs/kit';
 	import NftCard from './nft_card.svelte';
 	export let data;
 	const { opensea } = data;
@@ -15,6 +16,8 @@
 				<NftCard {collection} {image_url}></NftCard>
 			</div>
 		{/each}
+	{:catch error}
+		<p>{error.message}</p>
 	{/await}
 </section>
 
