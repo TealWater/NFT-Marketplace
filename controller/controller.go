@@ -15,8 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
-
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -26,7 +24,6 @@ var event model.OpenSeaCollectionEvent
 var topCollections model.TopOpenSeaNFTCollections
 var collectionSlug string
 var mut sync.Mutex
-var ethConn *ethclient.Client
 
 func init() {
 	err := godotenv.Load(".env")
@@ -38,12 +35,6 @@ func init() {
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return r.Header.Get("Origin") == os.Getenv("TRUSTED_URL")
 	}
-
-	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/" + os.Getenv("INFRA_IO_KEY"))
-	if err != nil {
-		log.Println("unable to connect to ethereum node: ", err)
-	}
-	ethConn = conn
 }
 
 /*

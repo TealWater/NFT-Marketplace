@@ -6,17 +6,27 @@ import (
 	"io"
 	"log"
 	"math/big"
+	"os"
 	"time"
 
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 )
 
 var Stream *Event
+var ethConn *ethclient.Client
 
 func init() {
 	Stream = NewServer()
-	/**
-	to allow one source of eth gas updating, prevents having n routines for n client connections
+
+	conn, err := ethclient.Dial("https://mainnet.infura.io/v3/" + os.Getenv("INFRA_IO_KEY"))
+	if err != nil {
+		log.Println("unable to connect to ethereum node: ", err)
+	}
+	ethConn = conn
+
+	/*
+		to allow one source of eth gas updating, prevents having n routines for n client connections
 	*/
 	go handleGasUpdate()
 }
