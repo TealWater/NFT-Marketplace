@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	export let event = '#';
+	export let event_type = '#';
 	export let collection = '#';
 	export let rarity = '#';
 	export let price = '#';
@@ -12,20 +13,32 @@
 	// for values from API call
 	export let order_type = '#';
 	export let asset = {};
+	export let nft = {};
 	export let payment = {};
 	export let event_timestamp = '#';
 
 	if (event == '#') {
 		event = order_type;
 	}
+	
 	if (collection == '#') {
 		// @ts-ignore
-		collection = asset.collection;
+		if(asset.name != ''){
+			// @ts-ignore
+			collection = asset.name;
+		}else{
+			// @ts-ignore
+			collection = nft.name;
+		}
 	}
 
 	if (price == '#') {
 		// @ts-ignore
 		price = payment.quantity;
+
+		if(price == '' && event_type == 'cancel'){
+			price = event + ' canceled';
+		}
 	}
 
 	if (timestamp == '#') {

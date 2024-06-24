@@ -19,7 +19,7 @@
 	onMount(() =>{
 		
 		// Create WebSocket connection.
-		socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
+		socket = new WebSocket(`ws://${PUBLIC_SOCKET}/opensea`);
 	
 		// Connection opened
 		socket.addEventListener('open', (event) => {
@@ -43,7 +43,7 @@
 	<h2>Collection events for NFT</h2>
 </section>
 <section>
-	<div class="title">Events</div>
+	<div class="title">{collection} Collection Events</div>
 	<hr />
 
 	<table class="table">
@@ -67,8 +67,8 @@
 				<EventRow {collection} {event} {timestamp} {quantity} {maker}></EventRow>
 			{/each}
 
-			{#each opensea as { order_type, asset, payment, quantity, maker, taker, event_timestamp }}
-				<EventRow {order_type} {asset} {payment} {quantity} {maker} {taker} {event_timestamp}
+			{#each opensea as { order_type, event_type, asset, nft, payment, quantity, maker, taker, event_timestamp }}
+				<EventRow {order_type} {event_type} {asset} {nft} {payment} {quantity} {maker} {taker} {event_timestamp}
 				></EventRow>
 			{/each}
 		{:catch error}

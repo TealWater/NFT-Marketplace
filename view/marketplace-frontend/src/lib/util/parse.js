@@ -23,7 +23,8 @@ export function CreateNFTEventFromSocket(message) {
   // console.log("#2: ", event_payload_data);
   nft_event.chain = event_payload_data.chain;
   // console.log("#333: ", event_payload_data.payload.collection.slug);
-  nft_event.collection = event_payload_data.payload.collection.slug
+  // nft_event.collection = event_payload_data.payload.collection.slug
+  nft_event.collection = event_payload_data.payload.item.metadata.name;
 
   //convert from UTC to unix time
   let time = new Date(event_payload.payload.event_timestamp).getTime() / 1000;
