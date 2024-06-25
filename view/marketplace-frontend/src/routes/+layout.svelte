@@ -2,7 +2,6 @@
 	import { source } from 'sveltekit-sse';
 	import { PUBLIC_TRUSTED_URL } from '$env/static/public';
 	const eventSourceGas = source(`${PUBLIC_TRUSTED_URL}/stream`).select('message');
-	console.log(eventSourceGas);
 </script>
 
 <nav>
@@ -22,7 +21,6 @@
 
 <footer>
 	<section>
-
 		Gas: {$eventSourceGas}
 	</section>
 	

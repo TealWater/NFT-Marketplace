@@ -16,27 +16,28 @@
 	 * @type {WebSocket}
 	 */
 	let socket;
-	onMount(() =>{
-		
+	onMount(() => {
 		// Create WebSocket connection.
-		socket = new WebSocket(`ws://${PUBLIC_SOCKET}/opensea`);
-	
+		socket = new WebSocket(`wss://${PUBLIC_SOCKET}/opensea`);
+
 		// Connection opened
 		socket.addEventListener('open', (event) => {
 			console.log('socket is open');
 			socket.send(`${collection.toString().trim()}`);
 		});
-	
+
 		// Listen for messages
 		socket.addEventListener('message', (event) => {
 			messages = [...messages, CreateNFTEventFromSocket(event.data)];
 			messages.reverse();
 		});
+	});
 
-	})
-	
-	onDestroy(() => socket.close());
-
+	onDestroy(() => {
+		if (socket != undefined) {
+			socket.close();
+		}
+	});
 </script>
 
 <section>
@@ -63,12 +64,22 @@
 		{#await opensea}
 			<p>loading...</p>
 		{:then opensea}
+			<!-- loading websocket messages -->
 			{#each messages as { collection, event, timestamp, quantity, maker }}
 				<EventRow {collection} {event} {timestamp} {quantity} {maker}></EventRow>
 			{/each}
-
+			<!-- loading api events -->
 			{#each opensea as { order_type, event_type, asset, nft, payment, quantity, maker, taker, event_timestamp }}
-				<EventRow {order_type} {event_type} {asset} {nft} {payment} {quantity} {maker} {taker} {event_timestamp}
+				<EventRow
+					{order_type}
+					{event_type}
+					{asset}
+					{nft}
+					{payment}
+					{quantity}
+					{maker}
+					{taker}
+					{event_timestamp}
 				></EventRow>
 			{/each}
 		{:catch error}
