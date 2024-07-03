@@ -1,7 +1,15 @@
 <script>
 	import { source } from 'sveltekit-sse';
+	import { MetaMaskStore } from '$lib/stores/metamaskStore';
 	import { PUBLIC_TRUSTED_URL } from '$env/static/public';
+	import { onMount } from 'svelte';
 	const eventSourceGas = source(`${PUBLIC_TRUSTED_URL}/stream`).select('message');
+
+	const { walletState, isMetaMaskPresent, connect, loaded, init } = MetaMaskStore();
+	onMount(() => {
+		init();
+	});
+	console.log(walletState);
 </script>
 
 <nav>
@@ -12,7 +20,7 @@
 			<!-- svelte-ignore a11y-invalid-attribute -->
 			<a href="#">about</a>
 			<!-- svelte-ignore a11y-invalid-attribute -->
-			<a href="#">sign in</a>
+			<button on:click={connect}>connect wallet</button>
 		</div>
 	</div>
 </nav>
@@ -23,8 +31,6 @@
 	<section>
 		Gas: {$eventSourceGas}
 	</section>
-	
-		
 </footer>
 
 <style>
@@ -49,26 +55,39 @@
 		margin-left: 5px;
 	}
 
-	.navbar a {
+	.navbar a,
+	button {
 		font-size: 18px;
 		font-weight: bold;
 		height: 100%;
 		justify-content: space-between;
 		margin-right: 30px;
-
 	}
-	.navbar a:hover {
+	.navbar a,
+	button:hover {
 		color: brown;
 	}
 
-	footer{
+	.navbar button {
+		background: none;
+		border: none;
+		padding: 0 !important;
+		/*optional*/
+		font-family: arial, sans-serif;
+		/*input has OS specific font-family*/
+		color: #069;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	footer {
 		position: sticky;
 		bottom: 0;
 		background-color: wheat;
 		width: 100%;
 	}
 
-	footer section{
+	footer section {
 		text-align: center;
 	}
 </style>
