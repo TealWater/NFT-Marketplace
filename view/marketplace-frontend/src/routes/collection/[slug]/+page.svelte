@@ -9,9 +9,9 @@
 	{#await opensea}
 		<p>loading...</p>
 	{:then opensea}
-		{#each opensea as { collection, name, image_url, price, currency, identifier }}
+		{#each opensea as { collection, name, image_url, price, currency, identifier, contract }}
 			<div>
-				<NftListing {name} {identifier} {image_url} {price} {currency}></NftListing>
+				<NftListing {name} {identifier} {contract} {image_url} {price} {currency}></NftListing>
 			</div>
 		{/each}
 	{:catch error}

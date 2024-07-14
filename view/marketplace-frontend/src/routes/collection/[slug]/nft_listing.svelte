@@ -2,13 +2,14 @@
 	import { goto } from '$app/navigation';
 	export let name = '';
 	export let image_url = '';
-    export let price = '';
-    export let currency = '';
-    export let identifier = '';
-
-    if(name == ''){
-        name = identifier;
-    }
+	export let price = '';
+	export let currency = '';
+	export let identifier = '';
+	export let contract = '';
+	
+	if (name == '') {
+		name = identifier;
+	}
 	price = Number.parseFloat(price).toFixed(2);
 
 	function handleClickCollectionEvent() {
@@ -16,9 +17,9 @@
 		// goto(`/events/${collection}`);
 	}
 
-	function handleClickViewCollection() {
+	function handleClickBuyNFT() {
 		// console.log('clicked');
-		// goto(`/collection/${collection}`);
+		goto(`/ethereum/${contract}/${identifier}`);
 	}
 </script>
 
@@ -50,8 +51,8 @@
 		</span>
 
 		<span id="button">
-			<button disabled on:click={ handleClickCollectionEvent}>See Collection Events</button>
-			<button disabled on:click={handleClickViewCollection}>See Collection</button>
+			<button disabled on:click={handleClickCollectionEvent}>See Collection Events</button>
+			<button on:click={handleClickBuyNFT}>Buy</button>
 		</span>
 	</section>
 </article>
@@ -85,7 +86,7 @@
 		display: flex;
 		justify-content: center;
 	}
-	button{
+	button {
 		margin-left: 5px;
 	}
 </style>
