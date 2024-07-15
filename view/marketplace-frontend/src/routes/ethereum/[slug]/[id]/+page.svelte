@@ -1,26 +1,28 @@
 <script>
 	/* @type {import('./$types').PageData} */
 	import { page } from '$app/stores';
-	import { MetaMaskStore } from '$lib/stores/metamaskStore';
+	import onboard from '$lib/stores/embeddedWalletStore';
+	import { wallet_state } from '$lib/stores/store.js';
 	export let data;
 	const { nft } = data;
-	const { walletState, isMetaMaskPresent, connect, loaded, init } = MetaMaskStore
-	// const image = nft[image_url];
-	// console.log("image: ", image);
-	console.log('nft ', nft);
-	console.log('params ', $page.params);
+	// console.log('nft ', nft);
+	// console.log('params ', $page.params);
+	const wallets = onboard.state.select('wallets');
+	$: hasProvider = $wallet_state;
+	
 
-	function buyNFT(){
-		console.log("loaded22:", loaded);
-		// console.log("wallet state:", $walletState);
-
-		if(!loaded){
-			alert("ROFL! Hey bud, you need to connect your crypto wallet (metamask, phantom, etc...) to purchase this NFT.\n\nRemember... no shoes, no shirt, no service.\n\n\nIn this case its no wallet no service.");
-		}else{
-			alert("Hmm... it seems the elves have not fully implemented the buying functionality yet. Check back later!");
+	function buyNFT() {
+		// console.log("**:",hasProvider);
+		if (!hasProvider) {
+			alert(
+				'ROFL! Hey bud, you need to connect your crypto wallet (metamask, phantom, etc...) to purchase this NFT.\n\nRemember... no shoes, no shirt, no service.\n\n\nIn this case its no wallet no service.'
+			);
+		} else {
+			alert(
+				'Hmm... it seems the elves have not fully implemented the buying functionality yet. Check back later!'
+			);
 		}
 	}
-
 </script>
 
 <section>
@@ -33,7 +35,7 @@
 			<p>identifier: {$page.params.id}</p> -->
 		</div>
 		<div class="offer">
-			<h2>{nft.collection} #{nft.identifier} </h2>
+			<h2>{nft.collection} #{nft.identifier}</h2>
 			<button on:click={buyNFT}>buy</button>
 		</div>
 	{/await}
@@ -61,8 +63,6 @@
 
 		min-width: 200px;
 		min-height: 200px;
-		
-		
 	}
 
 	.offer {
@@ -70,9 +70,10 @@
 		border-style: dashed;
 		font-weight: bold;
 		flex-direction: column;
-		justify-content:end;
+		justify-content: end;
 	}
-	.offer h2, button{
+	.offer h2,
+	button {
 		display: block;
 	}
 </style>

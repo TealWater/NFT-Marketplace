@@ -1,15 +1,30 @@
 <script>
 	import { source } from 'sveltekit-sse';
-	import { MetaMaskStore } from '$lib/stores/metamaskStore';
 	import { PUBLIC_TRUSTED_URL } from '$env/static/public';
-	import { onMount } from 'svelte';
+	import onboard from '$lib/stores/embeddedWalletStore';
+	import { wallet_state } from '$lib/stores/store';
+	
 	const eventSourceGas = source(`${PUBLIC_TRUSTED_URL}/stream`).select('message');
+	const wallets = onboard.state.select('wallets');
 
-	const { walletState, isMetaMaskPresent, connect, loaded, init } = MetaMaskStore();
-	onMount(() => {
-		init();
-	});
-	console.log(walletState);
+	$: connectedAccount = $wallets?.[0]?.accounts?.[0];
+	$: account = connectedAccount?.ens?.name
+		? {
+				ens: connectedAccount?.ens,
+				address: connectedAccount?.address
+			}
+		: { address: connectedAccount?.address };
+
+	const connect = async () => {
+		await onboard.connectWallet();
+		wallet_state.set($wallets?.[0]?.provider);
+	};
+
+	// @ts-ignore
+	const disconnect = ({ label }) => {
+		onboard.disconnectWallet({ label });
+		wallet_state.update((n) => n=null);
+	};
 </script>
 
 <nav>
@@ -20,7 +35,15 @@
 			<!-- svelte-ignore a11y-invalid-attribute -->
 			<a href="#">about</a>
 			<!-- svelte-ignore a11y-invalid-attribute -->
-			<button on:click={connect}>connect wallet</button>
+			{#if $wallets?.[0]?.provider}
+				<button
+					on:click={() => {
+						disconnect($wallets?.[0]);
+					}}>disconnect wallet</button
+				>
+			{:else}
+				<button on:click={connect}>connect wallet</button>
+			{/if}
 		</div>
 	</div>
 </nav>
