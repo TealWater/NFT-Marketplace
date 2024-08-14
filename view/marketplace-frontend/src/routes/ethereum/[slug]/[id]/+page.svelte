@@ -38,6 +38,18 @@
 			<h2>{nft.collection} #{nft.identifier}</h2>
 			<button on:click={buyNFT}>buy</button>
 		</div>
+		<div class="traits">
+			<h3>Traits</h3>
+			<table>
+				<thead>
+
+					<tr>Trait</tr>
+					<tr>Floor</tr>
+
+				</thead>
+				
+			</table>
+		</div>
 	{/await}
 </section>
 
@@ -52,8 +64,8 @@
 	.img {
 		border-color: blue;
 		border-style: dashed;
-		width: 30%;
-		height: 30%;
+		max-width: 400px;
+		max-height: 400px;
 	}
 
 	img {
