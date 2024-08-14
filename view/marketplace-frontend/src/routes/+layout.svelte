@@ -3,6 +3,7 @@
 	import { PUBLIC_TRUSTED_URL } from '$env/static/public';
 	import onboard from '$lib/stores/embeddedWalletStore';
 	import { wallet_state } from '$lib/stores/store';
+	import { onMount } from 'svelte';
 	
 	const eventSourceGas = source(`${PUBLIC_TRUSTED_URL}/stream`).select('message');
 	const wallets = onboard.state.select('wallets');
@@ -18,13 +19,26 @@
 	const connect = async () => {
 		await onboard.connectWallet();
 		wallet_state.set($wallets?.[0]?.provider);
+		localStorage.setItem('isWalletConnected', 'true');
+		localStorage.setItem('walletProvider','');
 	};
 
 	// @ts-ignore
 	const disconnect = ({ label }) => {
 		onboard.disconnectWallet({ label });
 		wallet_state.update((n) => n=null);
+		localStorage.setItem('isWalletConnected', 'false');
 	};
+
+	onMount(() => {
+		if(localStorage?.getItem('isWalletConnected')  === 'true'){
+			console.log(localStorage.getItem('walletProvider'));
+			//wallet_state.set();
+			localStorage.setItem('isWalletConnected', 'true');
+			// alert("wallet is connected");
+			// onboard.connectWallet();
+		}
+	})
 </script>
 
 <nav>
