@@ -9,7 +9,6 @@
 	// console.log('params ', $page.params);
 	const wallets = onboard.state.select('wallets');
 	$: hasProvider = $wallet_state;
-	
 
 	function buyNFT() {
 		// console.log("**:",hasProvider);
@@ -39,18 +38,36 @@
 			<button on:click={buyNFT}>buy</button>
 		</div>
 		<div class="traits">
-			<h3>Traits</h3>
+			<h2>Traits</h2>
 			<table>
-				<thead>
-
-					<tr>Trait</tr>
-					<tr>Floor</tr>
-
-				</thead>
-				
+				<!-- <tr>
+					<thead>Trait</thead>
+					<thead>Floor</thead>
+				</tr> -->
+				{#each nft.traits as { trait_type, value }}
+					<tr>
+						{trait_type} : {value}
+					</tr>
+				{/each}
+				<!-- <p>{nft.traits[0].trait_type}</p> -->
 			</table>
 		</div>
 	{/await}
+</section>
+<section>
+	<table>
+		<tr>
+			<thead>
+				<th>Item</th>
+				<th>Price</th>
+				<th>From</th>
+				<th>Order Type</th>
+			</thead>
+		</tr>
+		<tr>
+			<td>hi mom!</td>
+		</tr>
+	</table>
 </section>
 
 <style>
@@ -87,5 +104,16 @@
 	.offer h2,
 	button {
 		display: block;
+	}
+
+	.traits {
+		border-color: black;
+		border-style: groove;
+	}
+	.traits tr {
+		font-size: large;
+	}
+	.traits tr:nth-of-type(odd) {
+		background-color: #eee;
 	}
 </style>
