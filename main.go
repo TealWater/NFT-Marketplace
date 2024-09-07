@@ -27,6 +27,7 @@ func main() {
 	router.GET("/getStats", controller.GetNftStats)
 	router.GET("/getCollection", controller.GetCollection)
 	router.GET("/getEvents", controller.GetCollectionEvents)
+	router.GET("/getSingleNFTEvents", controller.GetEventsForSingleNFT)
 	router.GET("/getTopCollections", controller.GetTopNFTCollections)
 	router.GET("/getSingleNFT", controller.GetSingleOpenSeaNFT)
 	router.POST("/stream", controller.HandleMiddleware(), controller.Stream.ServeHTTP(), controller.StreamGasPrice)

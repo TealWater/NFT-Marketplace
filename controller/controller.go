@@ -164,6 +164,66 @@ func GetCollectionEvents(c *gin.Context) {
 }
 
 /*
+GetEventsForSingleNFT - returns the last 50 events for a single Opensea NFT
+*/
+func GetEventsForSingleNFT(c *gin.Context) {
+	event = model.OpenSeaCollectionEvent{}
+	NFTEvent := &event
+	chain := c.Query("chain")
+	address := c.Query("address")
+	identifier := c.Query("identifier")
+
+	switch {
+	case len(chain) < 1:
+		c.JSON(http.StatusBadRequest, "missing web3 chain name (i.e. ethereum, solana)")
+		return
+
+	case len(address) < 1:
+		c.JSON(http.StatusBadRequest, "missing web3 address/contract name of NFT")
+		return
+
+	case len(identifier) < 1:
+		c.JSON(http.StatusBadRequest, "missing NFT identifer")
+		return
+	}
+
+	url := "https://api.opensea.io/api/v2/events/" + chain + "/contract/" + address + "/nfts/" + identifier
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	req.Header = http.Header{
+		"accept":    {"application/json"},
+		"x-api-key": {os.Getenv("OPEN_SEA_KEY")},
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := json.Unmarshal(body, NFTEvent); err != nil {
+		log.Println("unable to unmarshal json")
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, NFTEvent)
+}
+
+/*
 GetTopNFTCollections returns the top NFT Collections on Opensea.com based on market cap.
 
 Will return 50 NFTs by default, upper limit is 100
@@ -317,7 +377,7 @@ func getSingleOpenSeaNFT(c *gin.Context, nft model.OpenSeaNFTListing, idx int) (
 	}
 
 	//build the nft
-	//can append an nft struct to an empty slice
+	//can't append an nft struct to an empty slice
 	builtNFT.Nfts = make([]struct {
 		Identifier    string  "json:\"identifier\""
 		Collection    string  "json:\"collection\""
