@@ -98,6 +98,9 @@ const appMetadata = {
 }
 
 const onboard = Onboard({
+    connect: {
+        autoConnectLastWallet: true
+    },
     wallets,
     chains,
     appMetadata
