@@ -3,16 +3,18 @@
 	import { page } from '$app/stores';
 	import onboard from '$lib/stores/embeddedWalletStore';
 	import { wallet_state } from '$lib/stores/store.js';
+	import { onMount } from 'svelte';
 	export let data;
 	const { nft } = data;
 	// console.log('nft ', nft);
 	// console.log('params ', $page.params);
 	const wallets = onboard.state.select('wallets');
-	$: hasProvider = $wallet_state;
+	let hasProvider = false;
+ 	//connectedAccount;
 
 	function buyNFT() {
 		// console.log("**:",hasProvider);
-		if (!hasProvider) {
+		if (hasProvider) {
 			alert(
 				'ROFL! Hey bud, you need to connect your crypto wallet (metamask, phantom, etc...) to purchase this NFT.\n\nRemember... no shoes, no shirt, no service.\n\n\nIn this case its no wallet no service.'
 			);
@@ -22,6 +24,13 @@
 			);
 		}
 	}
+
+	onMount(() => {
+		const connectedAccount = $wallets?.[0]?.accounts?.[0];
+		if(connectedAccount.address != null ){
+			hasProvider = true;
+		}
+	})
 </script>
 
 <section>
