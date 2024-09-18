@@ -172,6 +172,7 @@ func GetEventsForSingleNFT(c *gin.Context) {
 	chain := c.Query("chain")
 	address := c.Query("address")
 	identifier := c.Query("identifier")
+	event_type := c.Query("event_type")
 
 	switch {
 	case len(chain) < 1:
@@ -187,7 +188,12 @@ func GetEventsForSingleNFT(c *gin.Context) {
 		return
 	}
 
-	url := "https://api.opensea.io/api/v2/events/" + chain + "/contract/" + address + "/nfts/" + identifier
+	url := "https://api.opensea.io/api/v2/events/chain/" + chain + "/contract/" + address + "/nfts/" + identifier
+
+	if len(event_type) > 0 {
+		url += "?event_type=" + event_type
+	}
+	log.Println(url)
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
