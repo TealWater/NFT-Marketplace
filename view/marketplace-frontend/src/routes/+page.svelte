@@ -1,7 +1,7 @@
 <script>
 	import { collection_count } from '$lib/stores/store';
 	import { error } from '@sveltejs/kit';
-	import NftCard from './nft_card.svelte';
+	import NftCard from '$lib/components/nft_card.svelte';
 	export let data;
 	const { opensea } = data;
 	let collection = 'persona';

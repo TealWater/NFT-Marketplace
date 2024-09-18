@@ -1,6 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData} */
-	import NftListing from './nft_listing.svelte';
+	import NftListing from '$lib/components/nft_listing.svelte';
 	export let data;
 	const { opensea } = data;
 </script>

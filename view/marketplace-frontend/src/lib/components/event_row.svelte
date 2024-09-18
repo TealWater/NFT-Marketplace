@@ -8,6 +8,8 @@
 	export let quantity = '#';
 	export let maker = '#';
 	export let taker = '#';
+	export let buyer = '#';
+	export let seller = '#';
 	export let timestamp = '#';
 
 	// for values from API call
@@ -18,15 +20,19 @@
 	export let event_timestamp = '#';
 
 	if (event == '#') {
-		event = order_type;
+		if (order_type == '#') {
+			event = event_type;
+		} else {
+			event = order_type;
+		}
 	}
-	
+
 	if (collection == '#') {
 		// @ts-ignore
-		if(asset.name != ''){
+		if (asset.name != '') {
 			// @ts-ignore
 			collection = asset.name;
-		}else{
+		} else {
 			// @ts-ignore
 			collection = nft.name;
 		}
@@ -36,13 +42,20 @@
 		// @ts-ignore
 		price = payment.quantity;
 
-		if(price == '' && event_type == 'cancel'){
+		if (price == '' && event_type == 'cancel') {
 			price = event + ' canceled';
 		}
 	}
 
 	if (timestamp == '#') {
 		timestamp = event_timestamp;
+	}
+
+	if (maker == '#') {
+		maker = seller;
+	}
+	if (taker == '#') {
+		taker = buyer;
 	}
 
 	let parsedDate = new Date(Number.parseInt(timestamp) * 1000);

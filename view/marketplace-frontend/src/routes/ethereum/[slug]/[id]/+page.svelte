@@ -2,16 +2,12 @@
 	/* @type {import('./$types').PageData} */
 	import { page } from '$app/stores';
 	import onboard from '$lib/stores/embeddedWalletStore';
-	import { wallet_state } from '$lib/stores/store.js';
 	import { onDestroy } from 'svelte';
+	import EventRow from '$lib/components/event_row.svelte';
 	export let data;
-	const { nft } = data;
-	// console.log('nft ', nft);
-	// console.log('params ', $page.params);
+	const { nft, events } = data;
 	const wallets = onboard.state.select('wallets');
 	const { unsubscribe } = wallets.subscribe((update) => console.log('state update: ', update));
-	let hasProvider = false;
-	//connectedAccount;
 
 	function buyNFT() {
 		// is there a wallet connected?
@@ -67,13 +63,18 @@
 			<thead>
 				<th>Item</th>
 				<th>Price</th>
-				<th>From</th>
-				<th>Order Type</th>
+				<th>Buyer</th>
+				<th>Seller</th>
+				<th>Timestamp</th>
 			</thead>
 		</tr>
-		<tr>
-			<td>hi mom!</td>
-		</tr>
+		{#await events}
+			<p>loading...</p>
+		{:then events}
+			{#each events as { event_type, nft, payment, buyer, seller }}
+				<EventRow {event_type} {payment} {buyer} {seller} {nft}></EventRow>
+			{/each}
+		{/await}
 	</table>
 </section>
 
