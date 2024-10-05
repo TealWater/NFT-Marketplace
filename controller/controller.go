@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"io"
 	"log"
@@ -10,6 +9,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/TealWater/NFT-Marketplace/utils"
 
 	"github.com/TealWater/NFT-Marketplace/model"
 	"github.com/gin-gonic/gin"
@@ -160,6 +161,11 @@ func GetCollectionEvents(c *gin.Context) {
 		return
 	}
 
+	//format NFT price to remove excess decimals
+	for key := range event.AssetEvents {
+		event.AssetEvents[key].Payment.Quantity = utils.FormatPrice(event.AssetEvents[key].Payment.Quantity, event.AssetEvents[key].Payment.Decimals) + " " + event.AssetEvents[key].Payment.Symbol
+	}
+
 	c.JSON(http.StatusOK, event)
 }
 
@@ -224,6 +230,11 @@ func GetEventsForSingleNFT(c *gin.Context) {
 		log.Println("unable to unmarshal json")
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
+	}
+
+	//format NFT price to remove excess decimals
+	for key := range NFTEvent.AssetEvents {
+		NFTEvent.AssetEvents[key].Payment.Quantity = utils.FormatPrice(NFTEvent.AssetEvents[key].Payment.Quantity, NFTEvent.AssetEvents[key].Payment.Decimals) + " " + NFTEvent.AssetEvents[key].Payment.Symbol
 	}
 
 	c.JSON(http.StatusOK, NFTEvent)
@@ -415,26 +426,27 @@ func getSingleOpenSeaNFT(c *gin.Context, nft model.OpenSeaNFTListing, idx int) (
 
 	stringPrice := nft.Listings[idx].Price.Current.Value
 	decimal := nft.Listings[idx].Price.Current.Decimals
-	decimalPlacement := len(stringPrice) - decimal
+	// decimalPlacement := len(stringPrice) - decimal
 	//len(str) - decimal --> decimal placement
 
 	// log.Println("price: ", stringPrice, "\ndecimals: ", decimal, "\ndecimal placement: ", decimalPlacement, "\nstring len: ", len(stringPrice))
 
-	var buffer bytes.Buffer
-	if decimalPlacement < 0 {
-		buffer.WriteString("0.")
-		for decimalPlacement < 0 {
-			buffer.WriteString("0")
-			decimalPlacement++
-		}
-		buffer.WriteString(stringPrice)
-	} else {
-		buffer.WriteString(stringPrice[:decimalPlacement])
-		buffer.WriteString(".")
-		buffer.WriteString(stringPrice[decimalPlacement:])
-	}
+	// var buffer bytes.Buffer
+	// if decimalPlacement < 0 {
+	// 	buffer.WriteString("0.")
+	// 	for decimalPlacement < 0 {
+	// 		buffer.WriteString("0")
+	// 		decimalPlacement++
+	// 	}
+	// 	buffer.WriteString(stringPrice)
+	// } else {
+	// 	buffer.WriteString(stringPrice[:decimalPlacement])
+	// 	buffer.WriteString(".")
+	// 	buffer.WriteString(stringPrice[decimalPlacement:])
+	// }
 
-	builtNFT.Nfts[0].Price, _ = strconv.ParseFloat(buffer.String(), 32)
+	// builtNFT.Nfts[0].Price, _ = strconv.ParseFloat(buffer.String(), 32)
+	builtNFT.Nfts[0].Price, _ = strconv.ParseFloat(utils.FormatPrice(stringPrice, decimal), 32)
 	builtNFT.Nfts[0].Currency = nft.Listings[idx].Price.Current.Currency
 	return builtNFT, nil
 }
