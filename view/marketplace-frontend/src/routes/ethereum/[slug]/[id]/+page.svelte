@@ -3,11 +3,13 @@
 	import { page } from '$app/stores';
 	import onboard from '$lib/stores/embeddedWalletStore';
 	import { onDestroy } from 'svelte';
-	import EventRow from '$lib/components/event_row.svelte';
+	import EventRow from '$lib/components/sale_event_row.svelte';
 	export let data;
 	const { nft, events } = data;
 	const wallets = onboard.state.select('wallets');
 	const { unsubscribe } = wallets.subscribe((update) => console.log('state update: ', update));
+
+	console.log("***: ", events);
 
 	function buyNFT() {
 		// is there a wallet connected?

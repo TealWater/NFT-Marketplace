@@ -3,7 +3,7 @@
 	import { CreateNFTEventFromSocket } from '$lib/util/parse.js';
 	// @ts-ignore
 	import { PUBLIC_SOCKET } from '$env/static/public';
-	import EventRow from '$lib/components/event_row.svelte';
+	import EventRow from '$lib/components/live_event_row.svelte';
 	export let data;
 	const { opensea, collection } = data;
 
