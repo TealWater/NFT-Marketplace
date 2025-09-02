@@ -241,14 +241,14 @@ func GetEventsForSingleNFT(c *gin.Context) {
 }
 
 /*
-GetTopNFTCollections returns the top NFT Collections on Opensea.com based on market cap.
+GetTopNFTCollections returns the top NFT Collections on Opensea.com based on 7 day volume.
 
 Will return 50 NFTs by default, upper limit is 100
 */
 func GetTopNFTCollections(c *gin.Context) {
 	topCollections = model.TopOpenSeaNFTCollections{}
 	count := c.DefaultQuery("limit", "50")
-	url := "https://api.opensea.io/api/v2/collections?chain=ethereum&order_by=market_cap&limit=" + count
+	url := "https://api.opensea.io/api/v2/collections?&order_by=seven_day_volume&limit=" + count
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
