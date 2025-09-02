@@ -47,6 +47,6 @@
 		"add": "^2.0.6",
 		"buffer": "^6.0.3",
 		"dotenv": "^16.4.5",
-		"intl-messageformat": "^10.5.14"
+		"intl-messageformat": "^10.7.16"
 	}
 }
